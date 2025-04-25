@@ -3,6 +3,7 @@ channels:
 dependencies:
 - python =3.12
 - ase=3.24.0
+- hatchling =1.27.0
 - matplotlib=3.10.1
 - xmlschema=3.4.3
 - optimade=1.2.3
