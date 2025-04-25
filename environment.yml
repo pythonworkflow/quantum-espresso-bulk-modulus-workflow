@@ -2,5 +2,12 @@ channels:
 - conda-forge
 dependencies:
 - python =3.12
+- ase=3.24.0
+- hatchling =1.27.0
+- matplotlib=3.10.1
+- xmlschema=3.4.3
+- optimade=1.2.3
+- qe=7.2
+- qe-tools=2.0.0
 - pip:
   - python-workflow-definition==0.0.1
