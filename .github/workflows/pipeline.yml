@@ -22,6 +22,7 @@ jobs:
       shell: bash -l {0}
       run: |
         export ESPRESSO_PSEUDO=$(pwd)/espresso/pseudo
+        conda install -c conda-forge -y aiida-workgraph=0.5.2
         pip install --no-deps --no-build-isolation -e qe_xml_parser
         verdi presto --profile-name pwd
         echo -e 'from aiida import load_profile\nload_profile()\n\nfrom python_workflow_definition.aiida import load_workflow_json\n\n\nif __name__ == "__main__":\n    workgraph = load_workflow_json(file_name="workflow.json")\n    workgraph.run()' > test_with_aiida.py
@@ -43,6 +44,7 @@ jobs:
       shell: bash -l {0}
       run: |
         export ESPRESSO_PSEUDO=$(pwd)/espresso/pseudo
+        conda install -c conda-forge -y jobflow=0.1.19
         pip install --no-deps --no-build-isolation -e qe_xml_parser
         echo -e 'from jobflow.managers.local import run_locally\nfrom python_workflow_definition.jobflow import load_workflow_json\n\n\nif __name__ == "__main__":\n    flow = load_workflow_json(file_name="workflow.json")\n    print(run_locally(flow))' > test_with_jobflow.py
         python test_with_jobflow.py
@@ -63,6 +65,29 @@ jobs:
       shell: bash -l {0}
       run: |
         export ESPRESSO_PSEUDO=$(pwd)/espresso/pseudo
+        conda install -c conda-forge -y pyiron_base=0.11.11
         pip install --no-deps --no-build-isolation -e qe_xml_parser
         echo -e 'from python_workflow_definition.pyiron_base import load_workflow_json\n\n\nif __name__ == "__main__":\n    delayed_object_lst = load_workflow_json(file_name="workflow.json")\n    print(delayed_object_lst[-1].pull())' > test_with_pyiron.py
         python test_with_pyiron.py
+
+  cwl:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Conda config
+      run: echo -e "channels:\n  - conda-forge\n" > .condarc
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: "3.12"
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      run: |
+        export ESPRESSO_PSEUDO=$(pwd)/espresso/pseudo
+        conda install -c conda-forge -y cwltool=3.1.20250110105449
+        pip install --no-deps --no-build-isolation -e qe_xml_parser
+        echo -e 'from python_workflow_definition.cwl import write_workflow\n\n\nif __name__ == "__main__":\n    write_workflow(file_name="workflow.json")' > test_with_cwl.py
+        python test_with_cwl.py
+        cwltool --preserve-environment=ESPRESSO_PSEUDO workflow.cwl workflow.yml
