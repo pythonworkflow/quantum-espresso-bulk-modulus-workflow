@@ -2,7 +2,7 @@ channels:
 - conda-forge
 dependencies:
 - python =3.12
-- python-workflow-definition =0.0.1
+- python-workflow-definition =0.1.0
 - ase=3.24.0
 - hatchling =1.27.0
 - matplotlib=3.10.1
